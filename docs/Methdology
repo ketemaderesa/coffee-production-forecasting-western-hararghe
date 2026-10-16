@@ -1,1 +1,741 @@
+This document provides a comprehensive description of the methodology used in the study:
 
+> **Machine Learning-Based Forecasting of Annual Coffee Production in Western Hararghe Zone, Ethiopia**
+>
+> Ketema Deresa, Hashim Siraj, Gadissa Nemomsa
+> Oda Bultum University, Chiro, Oromia, Ethiopia
+# Extended Methodology
+
+This document provides a comprehensive description of the methodology used in the study:
+
+> **Machine Learning-Based Forecasting of Annual Coffee Production in Western Hararghe Zone, Ethiopia**
+>
+> Ketema Deresa, Hashim Siraj, Gadissa Nemomsa
+> Oda Bultum University, Chiro, Oromia, Ethiopia
+
+---
+
+## Table of Contents
+
+1. [Study Area](#1-study-area)
+2. [Research Design](#2-research-design)
+3. [Data Collection](#3-data-collection)
+4. [Data Preprocessing and Quality Audit](#4-data-preprocessing-and-quality-audit)
+5. [Exploratory Data Analysis](#5-exploratory-data-analysis)
+6. [Chronological Train–Test Split](#6-chronological-traintest-split)
+7. [In-Fold Preprocessing](#7-in-fold-preprocessing)
+8. [Machine Learning Algorithms](#8-machine-learning-algorithms)
+9. [Hyperparameter Optimization](#9-hyperparameter-optimization)
+10. [Model Selection Rule](#10-model-selection-rule)
+11. [Final Model Evaluation](#11-final-model-evaluation)
+12. [Post-Hoc Diagnostics](#12-post-hoc-diagnostics)
+13. [Feature Importance](#13-feature-importance)
+14. [Software and Reproducibility](#14-software-and-reproducibility)
+15. [Limitations](#15-limitations)
+16. [References](#16-references)
+
+---
+
+## 1. Study Area
+
+This study was conducted in five coffee-producing districts of the Western Hararghe Zone in eastern Ethiopia:
+
+| District | Description |
+|----------|-------------|
+| Boke | Major coffee-producing district |
+| Dara Labu | Major coffee-producing district |
+| Habro | Major coffee-producing district |
+| Shanan Dhugoo | Major coffee-producing district |
+| Tulo | Major coffee-producing district |
+
+**Geographic coordinates:** Approximately 7°30′–9°30′ N latitude and 40°–41° E longitude.
+
+**Elevation:** 1,500–2,300 m above sea level.
+
+**Climate:** Subtropical highland, with reported annual air temperatures of 15–25 °C (standard 2-m air temperature) and mean annual rainfall of approximately 900–1,200 mm.
+
+**Rainfall pattern:** Bimodal — main rainy season (June–September) and shorter rainy season (March–May).
+
+**Farming systems:** Smallholder garden-based agroforestry, intercropping coffee with khat (*Catha edulis*), sorghum, maize, beans, and shade trees.
+
+**Important note on temperature:** The temperature predictor used in this study is **NASA POWER near-surface skin temperature**, which is systematically warmer than standard 2-meter air temperature. The mean value in this dataset is 34.47 °C (range: 32.00–37.00 °C). This distinction is explicitly acknowledged throughout the manuscript.
+
+---
+
+## 2. Research Design
+
+This study employed a quantitative research design to systematically analyze numerical data on coffee production, climatic variables, and soil properties for machine learning-based production prediction.
+
+The workflow proceeds in **eight stages**:
+
+| Stage | Description |
+|-------|-------------|
+| 1 | Research problem and prediction objective defined |
+| 2 | Agricultural, soil, and climatic data collected from multiple sources |
+| 3 | Data entry, cleaning, and quality audit (missing values, duplicates, unit harmonization, IQR-based outlier flagging without removal) |
+| 4 | Exploratory data analysis (EDA) — distributions and pairwise correlations |
+| 5 | Chronological train–test split |
+| 6 | In-fold preprocessing (imputation, standardization, one-hot encoding) |
+| 7 | Model training and hyperparameter tuning using five-fold expanding-window time-series cross-validation |
+| 8 | Locked test-set evaluation followed by post-hoc diagnostics |
+
+---
+
+## 3. Data Collection
+
+### 3.1 Data Sources
+
+| Data Type | Source | Resolution |
+|-----------|--------|------------|
+| Agricultural records (production, cultivated area, fertilizer use) | District and zonal agricultural offices | District–year |
+| Soil properties (pH, N, P, K, organic C, soil type) | Soil laboratory reports from district offices | District–year |
+| Climate data (temperature, precipitation, humidity, wind, solar radiation, soil wetness) | Ethiopian National Meteorological Agency (ENMA) and NASA POWER | ≈0.5° × 0.625° grid |
+
+### 3.2 Observation Period
+
+- **Ethiopian Calendar:** 2000–2015 EC
+- **Gregorian Calendar:** Approximately 2007/08–2022/23 GC
+- **Data acquisition date:** 2023/24 academic year
+
+**Important:** The observation period and the data acquisition date are distinct.
+
+### 3.3 Data Harmonization
+
+1. **Calendar conversion:** Climate observation dates were converted from Ethiopian Calendar to Gregorian Calendar and matched to corresponding agricultural years.
+
+2. **Temporal aggregation:**
+   - Annual means for temperature, humidity, wind speed, and solar radiation
+   - Annual totals for precipitation
+
+3. **Spatial assignment:**
+   - Climate variables assigned to each district based on district centroid from NASA POWER grid
+   - Soil variables assigned based on dominant soil type reported for each district-year record
+
+4. **Unit harmonization:** All variables converted to standard units before analysis.
+
+### 3.4 Dataset Structure
+
+| Property | Value |
+|----------|-------|
+| Total observations | N = 500 |
+| Districts | 5 |
+| Years | 16 (2000–2015 EC) |
+| Unit of analysis | Record within a district–year (not district–year aggregate) |
+| Records per district | 100 each (total across 16 years) |
+| Records per district–year | Ranged from 0 to 13 |
+| Year-level record counts | Ranged from 18 (2009) to 48 (2015) |
+
+**Note:** The dataset does not contain 80 district–year aggregates. The structure reflects the available secondary data, which included multiple production records per district–year from different recording units.
+
+---
+
+## 4. Data Preprocessing and Quality Audit
+
+### 4.1 Quality Checks
+
+| Check | Result |
+|-------|--------|
+| Missing values | 0 |
+| Duplicate rows | 0 |
+| Unit inconsistencies | None after harmonization |
+| Implausible values | Assessed and documented |
+
+### 4.2 Outlier Detection
+
+Outliers were identified using the **Interquartile Range (IQR) method**:
+# Extended Methodology
+
+This document provides a comprehensive description of the methodology used in the study:
+
+> **Machine Learning-Based Forecasting of Annual Coffee Production in Western Hararghe Zone, Ethiopia**
+>
+> Ketema Deresa, Hashim Siraj, Gadissa Nemomsa
+> Oda Bultum University, Chiro, Oromia, Ethiopia
+
+---
+
+## Table of Contents
+
+1. [Study Area](#1-study-area)
+2. [Research Design](#2-research-design)
+3. [Data Collection](#3-data-collection)
+4. [Data Preprocessing and Quality Audit](#4-data-preprocessing-and-quality-audit)
+5. [Exploratory Data Analysis](#5-exploratory-data-analysis)
+6. [Chronological Train–Test Split](#6-chronological-traintest-split)
+7. [In-Fold Preprocessing](#7-in-fold-preprocessing)
+8. [Machine Learning Algorithms](#8-machine-learning-algorithms)
+9. [Hyperparameter Optimization](#9-hyperparameter-optimization)
+10. [Model Selection Rule](#10-model-selection-rule)
+11. [Final Model Evaluation](#11-final-model-evaluation)
+12. [Post-Hoc Diagnostics](#12-post-hoc-diagnostics)
+13. [Feature Importance](#13-feature-importance)
+14. [Software and Reproducibility](#14-software-and-reproducibility)
+15. [Limitations](#15-limitations)
+16. [References](#16-references)
+
+---
+
+## 1. Study Area
+
+This study was conducted in five coffee-producing districts of the Western Hararghe Zone in eastern Ethiopia:
+
+| District | Description |
+|----------|-------------|
+| Boke | Major coffee-producing district |
+| Dara Labu | Major coffee-producing district |
+| Habro | Major coffee-producing district |
+| Shanan Dhugoo | Major coffee-producing district |
+| Tulo | Major coffee-producing district |
+
+**Geographic coordinates:** Approximately 7°30′–9°30′ N latitude and 40°–41° E longitude.
+
+**Elevation:** 1,500–2,300 m above sea level.
+
+**Climate:** Subtropical highland, with reported annual air temperatures of 15–25 °C (standard 2-m air temperature) and mean annual rainfall of approximately 900–1,200 mm.
+
+**Rainfall pattern:** Bimodal — main rainy season (June–September) and shorter rainy season (March–May).
+
+**Farming systems:** Smallholder garden-based agroforestry, intercropping coffee with khat (*Catha edulis*), sorghum, maize, beans, and shade trees.
+
+**Important note on temperature:** The temperature predictor used in this study is **NASA POWER near-surface skin temperature**, which is systematically warmer than standard 2-meter air temperature. The mean value in this dataset is 34.47 °C (range: 32.00–37.00 °C). This distinction is explicitly acknowledged throughout the manuscript.
+
+---
+
+## 2. Research Design
+
+This study employed a quantitative research design to systematically analyze numerical data on coffee production, climatic variables, and soil properties for machine learning-based production prediction.
+
+The workflow proceeds in **eight stages**:
+
+| Stage | Description |
+|-------|-------------|
+| 1 | Research problem and prediction objective defined |
+| 2 | Agricultural, soil, and climatic data collected from multiple sources |
+| 3 | Data entry, cleaning, and quality audit (missing values, duplicates, unit harmonization, IQR-based outlier flagging without removal) |
+| 4 | Exploratory data analysis (EDA) — distributions and pairwise correlations |
+| 5 | Chronological train–test split |
+| 6 | In-fold preprocessing (imputation, standardization, one-hot encoding) |
+| 7 | Model training and hyperparameter tuning using five-fold expanding-window time-series cross-validation |
+| 8 | Locked test-set evaluation followed by post-hoc diagnostics |
+
+---
+
+## 3. Data Collection
+
+### 3.1 Data Sources
+
+| Data Type | Source | Resolution |
+|-----------|--------|------------|
+| Agricultural records (production, cultivated area, fertilizer use) | District and zonal agricultural offices | District–year |
+| Soil properties (pH, N, P, K, organic C, soil type) | Soil laboratory reports from district offices | District–year |
+| Climate data (temperature, precipitation, humidity, wind, solar radiation, soil wetness) | Ethiopian National Meteorological Agency (ENMA) and NASA POWER | ≈0.5° × 0.625° grid |
+
+### 3.2 Observation Period
+
+- **Ethiopian Calendar:** 2000–2015 EC
+- **Gregorian Calendar:** Approximately 2007/08–2022/23 GC
+- **Data acquisition date:** 2023/24 academic year
+
+**Important:** The observation period and the data acquisition date are distinct.
+
+### 3.3 Data Harmonization
+
+1. **Calendar conversion:** Climate observation dates were converted from Ethiopian Calendar to Gregorian Calendar and matched to corresponding agricultural years.
+
+2. **Temporal aggregation:**
+   - Annual means for temperature, humidity, wind speed, and solar radiation
+   - Annual totals for precipitation
+
+3. **Spatial assignment:**
+   - Climate variables assigned to each district based on district centroid from NASA POWER grid
+   - Soil variables assigned based on dominant soil type reported for each district-year record
+
+4. **Unit harmonization:** All variables converted to standard units before analysis.
+
+### 3.4 Dataset Structure
+
+| Property | Value |
+|----------|-------|
+| Total observations | N = 500 |
+| Districts | 5 |
+| Years | 16 (2000–2015 EC) |
+| Unit of analysis | Record within a district–year (not district–year aggregate) |
+| Records per district | 100 each (total across 16 years) |
+| Records per district–year | Ranged from 0 to 13 |
+| Year-level record counts | Ranged from 18 (2009) to 48 (2015) |
+
+**Note:** The dataset does not contain 80 district–year aggregates. The structure reflects the available secondary data, which included multiple production records per district–year from different recording units.
+
+---
+
+## 4. Data Preprocessing and Quality Audit
+
+### 4.1 Quality Checks
+
+| Check | Result |
+|-------|--------|
+| Missing values | 0 |
+| Duplicate rows | 0 |
+| Unit inconsistencies | None after harmonization |
+| Implausible values | Assessed and documented |
+
+### 4.2 Outlier Detection
+
+Outliers were identified using the **Interquartile Range (IQR) method**:
+
+Lower bound = Q₁ − 1.5 × IQR
+Upper bound = Q₃ + 1.5 × IQR
+
+| Result | Count |
+|--------|-------|
+| Outliers flagged in `Production_tons` | 8 |
+| Outliers flagged in any predictor | 0 |
+| Outliers removed | 0 (all retained) |
+
+**Rationale for retention:** All flagged observations were examined against source records and retained to preserve natural variability.
+
+### 4.3 Missing Value Treatment
+
+| Variable Type | Imputation Method |
+|---------------|-------------------|
+| Numerical | Median imputation |
+| Categorical | Mode imputation |
+
+**Critical:** All imputation was fitted **strictly inside training folds** through scikit-learn Pipelines and ColumnTransformers.
+
+### 4.4 Data-Quality Audit Summary
+
+See `supplementary/Table_S1_data_quality_audit.pdf` for the complete data-quality audit table.
+
+See `supplementary/Table_S3_outlier_audit.pdf` for the complete outlier audit table.
+
+---
+
+## 5. Exploratory Data Analysis
+
+### 5.1 Descriptive Statistics
+
+Descriptive statistics were calculated for all variables (see `data/README.md` for the complete table).
+
+**Key statistics for target variable:**
+
+| Statistic | Value |
+|-----------|-------|
+| Mean | 2,515.85 tons |
+| SD | 1,219.05 tons |
+| Minimum | 518.20 tons |
+| Maximum | 6,509.00 tons |
+| Distribution | Positively skewed |
+
+### 5.2 Distribution Analysis
+
+- Boxplots and histograms were used to characterize variable distributions.
+- Cultivated area and exchangeable potassium exhibited the greatest variability.
+- Soil pH and annual temperature showed narrower distributions.
+
+### 5.3 Correlation Analysis
+
+- Pearson correlation was used to assess linear relationships among numerical predictors.
+- Inter-correlations among explanatory variables were generally very low and close to zero.
+- Cultivated area showed a very strong positive correlation with annual coffee production (r = 0.90).
+- Correlations reflect statistical associations, not causation.
+
+---
+
+## 6. Chronological Train–Test Split
+
+### 6.1 Split Design
+
+| Set | Period | N | Percentage |
+|-----|--------|---|------------|
+| Training | 2000–2012 EC | 389 | 77.8% |
+| Test | 2013–2015 EC | 111 | 22.2% |
+
+### 6.2 Rationale
+
+- A **chronological split** respects temporal ordering and prevents data leakage.
+- A random split could place future years in the training set and earlier years in the test set, inflating performance.
+- The test set was **locked** and consulted only once after model selection was complete.
+
+### 6.3 Random Seed
+
+All random operations used **random seed = 42** for reproducibility.
+
+---
+
+## 7. In-Fold Preprocessing
+
+### 7.1 Preprocessing Steps
+
+| Step | Method | Fitted Where |
+|------|--------|--------------|
+| Missing numerical values | Median imputation | Inside training folds |
+| Missing categorical values | Mode imputation | Inside training folds |
+| Numerical standardization | StandardScaler | Inside training folds |
+| Categorical encoding | OneHotEncoder | Inside training folds |
+
+### 7.2 Leakage Prevention
+
+- All preprocessing was implemented using scikit-learn **Pipelines** and **ColumnTransformers**.
+- Preprocessing was fitted **only on training data** within each cross-validation fold.
+- The test set was never used during preprocessing, tuning, or model selection.
+
+### 7.3 Outlier Treatment
+
+- IQR flagging was performed during the data audit (not during modeling).
+- No outlier removal was applied during modeling to preserve natural variability.
+- Imputation occurred only inside the cross-validation pipeline.
+
+---
+
+## 8. Machine Learning Algorithms
+
+Six regression algorithms were evaluated:
+
+### 8.1 Regularized Linear Models
+
+| Algorithm | Description | Key Hyperparameter |
+|-----------|-------------|-------------------|
+| Ridge Regression | L2 regularization | `alpha` |
+| ElasticNet | L1 + L2 regularization | `alpha`, `l1_ratio` |
+
+### 8.2 Kernel-Based Regression
+
+| Algorithm | Description | Key Hyperparameters |
+|-----------|-------------|---------------------|
+| Support Vector Regression (SVR) | Kernel-based regression | `C`, `epsilon`, `kernel` |
+
+### 8.3 Tree-Based Ensembles
+
+| Algorithm | Description | Key Hyperparameters |
+|-----------|-------------|---------------------|
+| Random Forest | Bagging ensemble | `n_estimators`, `max_depth`, `min_samples_leaf` |
+| Gradient Boosting | Boosting ensemble | `n_estimators`, `learning_rate`, `max_depth` |
+| XGBoost | Extreme gradient boosting | `n_estimators`, `learning_rate`, `max_depth`, `subsample` |
+
+### 8.4 Baseline References
+
+| Model | Description |
+|-------|-------------|
+| Baseline Mean | Predicts the training-set mean |
+| Linear Regression | Ordinary least squares |
+
+---
+
+## 9. Hyperparameter Optimization
+
+### 9.1 Search Strategy
+
+- **Method:** GridSearchCV
+- **Cross-validation:** Five-fold expanding-window TimeSeriesSplit
+- **Restriction:** Training set only
+
+### 9.2 Search Spaces and Selected Configurations
+
+| Model | Hyperparameter | Search Space | Selected |
+|-------|---------------|--------------|----------|
+| Ridge | `alpha` | 25 values from 0.001 to 1000 (log scale) | 10.0 |
+| ElasticNet | `alpha` | 0.01, 0.1, 0.2, 1.0 | 0.1 |
+| ElasticNet | `l1_ratio` | 0.1, 0.5, 0.9 | 0.1 |
+| ElasticNet | `max_iter` | Fixed | 10,000 |
+| Random Forest | `n_estimators` | 100, 200 | 100 |
+| Random Forest | `max_depth` | 5, 10, None | None |
+| Random Forest | `min_samples_leaf` | 2, 4 | 4 |
+| Gradient Boosting | `n_estimators` | 100, 200 | 100 |
+| Gradient Boosting | `learning_rate` | 0.05, 0.1 | 0.05 |
+| Gradient Boosting | `max_depth` | 3, 5 | 3 |
+| XGBoost | `n_estimators` | 100, 200 | 100 |
+| XGBoost | `learning_rate` | 0.05, 0.1 | 0.1 |
+| XGBoost | `max_depth` | 3, 5 | 3 |
+| XGBoost | `subsample` | 0.8, 1.0 | 0.8 |
+| SVR | `C` | 1, 10, 100 | 100 |
+| SVR | `epsilon` | 0.1, 0.2 | 0.2 |
+| SVR | `kernel` | linear, rbf | linear |
+
+### 9.3 TimeSeriesSplit Details
+
+| Fold | Training Size | Validation Size |
+|------|---------------|-----------------|
+| 1 | 256 | 21 |
+| 2 | 277 | 18 |
+| 3 | 295 | 36 |
+| 4 | 331 | 28 |
+| 5 | 359 | 30 |
+
+**Note:** Expanding-window design means training size increases with each fold.
+
+---
+
+## 10. Model Selection Rule
+
+### 10.1 One-Standard-Error (1-SE) Rule
+
+The 1-SE threshold was computed as:
+Threshold = CV R²_best − SD_best / √k
+
+Where:
+- `CV R²_best` = 0.8241 (highest cross-validated R², achieved by SVR)
+- `SD_best` = 0.0136 (standard deviation of SVR's CV R²)
+- `k` = 5 (number of folds)
+**Calculation:**
+Threshold = 0.8241 − 0.0136 / √5 = 0.8241 − 0.0061 = 0.8180
+
+### 10.2 Models Within 1-SE
+
+| Model | CV R² Mean | CV R² SD | Within 1-SE? |
+|-------|-----------|----------|--------------|
+| SVR | 0.8241 | 0.0136 | Yes |
+| Ridge | 0.8203 | 0.0088 | Yes |
+| ElasticNet | 0.8200 | 0.0097 | Yes |
+| XGBoost | 0.8132 | 0.0192 | No |
+| Linear Regression | 0.8084 | 0.0173 | No |
+| Gradient Boosting | 0.7954 | 0.0328 | No |
+| Random Forest | 0.7932 | 0.0151 | No |
+| Baseline Mean | −0.0574 | 0.1065 | No |
+
+### 10.3 Parsimony Rule
+
+Among models within the 1-SE threshold, the model with the **fewest tuned hyperparameters** was selected.
+
+| Model | Hyperparameters Tuned | Parsimony Rank | Selected? |
+|-------|----------------------|----------------|-----------|
+| Ridge | 1 (`alpha`) | 1 | **Yes** |
+| ElasticNet | 2 (`alpha`, `l1_ratio`) | 2 | No |
+| SVR | 3 (`C`, `epsilon`, `kernel`) | 3 | No |
+
+**Final model: Ridge Regression** (selected by the pre-specified 1-SE plus parsimony rule, not by test-set superiority)
+
+---
+
+## 11. Final Model Evaluation
+
+### 11.1 Test-Set Performance
+
+| Model | R² | RMSE (tons) | MAE (tons) | MAPE (%) | nRMSE (%) |
+|-------|-----|-------------|------------|----------|-----------|
+| Ridge | 0.8409 | 465.76 | 360.17 | 14.72 | 17.43 |
+| ElasticNet | 0.8408 | 465.90 | 354.77 | 14.57 | 17.43 |
+| Linear Regression | 0.8378 | 470.30 | 365.59 | 14.92 | 17.60 |
+| SVR | 0.8320 | 478.60 | 364.46 | 14.76 | 17.91 |
+| Gradient Boosting | 0.8299 | 481.56 | 360.66 | 13.95 | 18.02 |
+| Random Forest | 0.8267 | 486.11 | 373.76 | 14.65 | 18.19 |
+| XGBoost | 0.8126 | 505.55 | 386.64 | 14.74 | 18.91 |
+| Baseline Mean | −0.0299 | 1,185.04 | 949.83 | 43.42 | 44.34 |
+
+### 11.2 Bootstrap Confidence Intervals
+
+Bootstrap resampling (1,000 iterations) was performed on test-set predictions:
+
+| Model | R² Mean | R² 95% CI | RMSE Mean | RMSE 95% CI | MAE Mean | MAE 95% CI |
+|-------|---------|-----------|-----------|-------------|----------|------------|
+| Ridge | 0.8405 | [0.7918, 0.8805] | 463.51 | [389.63, 524.17] | 359.00 | [304.15, 415.01] |
+| ElasticNet | 0.8405 | [0.7948, 0.8813] | 463.81 | [383.23, 526.31] | 353.93 | [293.09, 407.80] |
+| Linear Regression | 0.8359 | [0.7823, 0.8769] | 470.02 | [398.56, 528.62] | 366.97 | [314.20, 423.06] |
+| SVR | 0.8315 | [0.7786, 0.8769] | 476.34 | [398.43, 545.26] | 363.48 | [303.98, 422.39] |
+
+**Interpretation:** Bootstrap CIs overlap substantially across all top models, indicating that small differences should not be over-interpreted as evidence of a robust ranking.
+
+---
+
+## 12. Post-Hoc Diagnostics
+
+### 12.1 Rolling-Origin Validation
+
+The training window was expanded year by year, and the next year was predicted:
+
+| Train End Year | Test Year | N_train | N_test | R² | RMSE (tons) | MAE (tons) |
+|----------------|-----------|---------|--------|-----|-------------|------------|
+| 2007 | 2008 | 256 | 21 | 0.7531 | 612.86 | 390.24 |
+| 2008 | 2009 | 277 | 18 | 0.8714 | 492.48 | 345.00 |
+| 2009 | 2010 | 295 | 36 | 0.7287 | 522.67 | 361.59 |
+| 2010 | 2011 | 331 | 28 | 0.8587 | 432.70 | 344.55 |
+| 2011 | 2012 | 359 | 30 | 0.7986 | 500.55 | 372.72 |
+| 2012 | 2013 | 389 | 31 | 0.8335 | 496.76 | 391.17 |
+| 2013 | 2014 | 420 | 32 | 0.8657 | 423.34 | 374.15 |
+
+**Summary:** Mean rolling R² = 0.8157 ± 0.0571, confirming stable predictive performance across time.
+
+### 12.2 Residual Diagnostics
+
+| Diagnostic | Result |
+|------------|--------|
+| Mean residual | 22.8 tons |
+| Residual vs. fitted pattern | No clear pattern; no strong heteroscedasticity |
+| Residual distribution | Approximately symmetric around zero |
+| Year-stratified residuals | No systematic temporal bias |
+
+### 12.3 Calibration Analysis
+
+| Metric | Value | Ideal |
+|--------|-------|-------|
+| Calibration slope | 0.988 ± 0.041 | 1.00 |
+| Calibration intercept | 55.49 tons | 0.00 |
+| Pearson correlation | r = 0.9173 (p = 2.15 × 10⁻⁴⁵) | — |
+
+**Interpretation:** The slope close to 1.0 indicates that predicted values scale appropriately with observed values. Mild deviation from perfect calibration has negligible practical impact at typical production levels.
+
+---
+
+## 13. Feature Importance
+
+### 13.1 Method
+
+**Held-out permutation importance** was computed on the final Ridge Regression model, evaluated on the chronological test set.
+
+**Rationale:** This model-agnostic approach avoids the incomparability of coefficient magnitudes, impurity-based importances, and model-specific scores across the six algorithms.
+
+### 13.2 Results
+
+| Feature | Importance Mean | Importance SD |
+|---------|-----------------|---------------|
+| Cultivated_Area_ha | 1.180515 | 0.112767 |
+| Soil_Type | 0.072618 | 0.018213 |
+| Fertilizer_Used | 0.007901 | 0.004950 |
+| pH | 0.006587 | 0.006184 |
+| Exchangeable_K_ppm | 0.002232 | 0.006203 |
+| Available_P_ppm | 0.000743 | 0.000910 |
+| Relative_Humidity_percent | 0.000474 | 0.000339 |
+| Precipitation_mm_day | 0.000243 | 0.000612 |
+| Annual_Temperature_C | 0.000160 | 0.001730 |
+| Organic_C_percent | −0.000064 | 0.005863 |
+| Total_N_percent | −0.000902 | 0.002331 |
+| Solar_Radiation_MJ_m2_day | −0.001148 | 0.000600 |
+| Soil_Wetness | −0.002113 | 0.001587 |
+| Wind_Speed_m_s | −0.004955 | 0.002646 |
+
+### 13.3 Cultivated Area Contribution
+
+To quantify the contribution of cultivated area, Ridge was re-fitted without `Cultivated_Area_ha`:
+
+| Model | Test R² |
+|-------|---------|
+| Full model (with cultivated area) | 0.8409 |
+| Reduced model (without cultivated area) | 0.6192 |
+| **Drop in R²** | **0.2217** |
+
+**Interpretation:** Cultivated area dominates prediction. However, this dominance partly reflects the mechanical relationship between cultivated area and total production (production ≈ area × yield). These are predictive associations, not causal determinants.
+
+### 13.4 Interpretation of Negative Importance
+
+Small negative values indicate that shuffling a feature marginally improved test performance. This is interpreted as the **absence of a detectable predictive signal** rather than as active harm.
+
+---
+
+## 14. Software and Reproducibility
+
+### 14.1 Software Environment
+
+| Component | Version |
+|-----------|---------|
+| Python | 3.9 |
+| scikit-learn | ≥1.0.0 |
+| XGBoost | ≥1.5.0 |
+| pandas | ≥1.3.0 |
+| NumPy | ≥1.21.0 |
+| Matplotlib | ≥3.5.0 |
+| SciPy | ≥1.7.0 |
+
+### 14.2 Reproducibility
+
+- **Random seed:** 42 (applied to all random operations)
+- **Code repository:** https://github.com/ketemaderesa/coffee-yield-forecasting-western-hararghe
+- **Dataset archive:** https://doi.org/10.5281/zenodo.19630675
+
+### 14.3 Computational Environment
+
+All analyses were performed on a standard desktop computer with the following specifications:
+
+- **Operating system:** Windows 10 / Linux (Ubuntu 20.04)
+- **Processor:** Intel Core i7
+- **RAM:** 16 GB
+- **Storage:** 512 GB SSD
+
+---
+
+## 15. Limitations
+
+The findings should be interpreted within the following constraints:
+
+| Limitation | Description | Implication |
+|------------|-------------|-------------|
+| **Limited geographic scope** | Five districts over a single 16-year period (N = 500) | Generalizability to other districts/regions is limited |
+| **No external validation** | External temporal and spatial validation not performed | Results do not constitute operational forecast validation |
+| **Secondary data quality** | Data from district offices may contain measurement inconsistencies | Some uncertainty in predictor values |
+| **Omitted variables** | Socio-economic and farm-management variables not included | Model may not capture all production drivers |
+| **Retrospective design** | Same-year cultivated area and full-year weather summaries not available at forecast time | Framework is retrospective estimation, not operational forecasting |
+| **No spatial transfer test** | Leave-one-district-out validation not performed (no observation-level district identifier) | Spatial transfer to unseen districts untested |
+| **Overlapping CIs** | Bootstrap CIs overlap substantially among top models | Small performance differences should not be over-interpreted |
+| **Dominant predictor** | Cultivated area dominates prediction | Partly reflects mechanical relationship with total production |
+
+### 15.1 Future Work
+
+Future research should:
+
+1. Integrate larger datasets covering additional districts and years
+2. Incorporate remote-sensing variables
+3. Include socio-economic and farm-management information
+4. Perform external temporal and spatial validation
+5. Develop operational forecasting models using lagged and seasonal predictors
+6. Test spatial transfer using leave-one-district-out validation
+
+---
+
+## 16. References
+
+1. Labouisse JP, Bellachew B, Kotecha S, Bertrand B (2008) Current status of coffee (*Coffea arabica* L.) genetic resources in Ethiopia: Implications for conservation. *Genet Resour Crop Evol* 55:1079–1093.
+
+2. Achamyelh K (2023) Assessments of Coffee Seedlings and Seed Production Challenges and Opportunity in Jimma Zone South West Ethiopia. *International Journal of Agricultural Economics* 8:146–151.
+
+3. Tadesse T, Tesfaye B, Agriculture GA-CF&, 2020 undefined (2017) Coffee production constraints and opportunities at major growing districts of southern Ethiopia. *Taylor & Francis* 6.
+
+4. Ahmed S, Brinkley S, Smith E, et al (2021) Climate Change and Coffee Quality: Systematic Review on the Effects of Environmental and Management Variation on Secondary Metabolites and Sensory Attributes of *Coffea arabica* and *Coffea canephora*. *Front Plant Sci* 12:708013.
+
+5. Yonas B, Bayetta B, Chemeda F (2014) Evaluation of bean qualities of indigenous Arabica coffee genotypes across different environments. *J Plant Breed Crop Sci* 6:135–143.
+
+6. Quiroga S, Suárez C, Solís JD (2015) Exploring coffee farmers' awareness about climate change and water needs: Smallholders' perceptions of adaptive capacity. *Environ Sci Policy* 45:53–66.
+
+7. Gizaw N, Abafita J, Merra TM (2022) Impact of coffee exports on economic growth in Ethiopia; An empirical investigation. *Cogent Economics & Finance* 10.
+
+8. Bolaños J, Corrales JCJJC, Campo LV, et al (2023) Feasibility of Early Yield Prediction per Coffee Tree Based on Multispectral Aerial Imagery: Case of Arabica Coffee Crops in Cauca-Colombia. *Remote Sensing* 15:282.
+
+9. Liu SY (2020) Artificial Intelligence (AI) in Agriculture. *IT Prof* 22:14–15.
+
+10. Degaga J (2020) Review on Coffee Production and Marketing in Ethiopia. *Journal of Marketing and Consumer Research* 67:7–15.
+
+11. Yen BPH, Khoi DN (2023) Modelling coffee yield in Dak Lak province using machine learning algorithms. *IOP Conf Ser Earth Environ Sci* 1170.
+
+12. Netsere A, Takala B (2021) Progress of Soil Fertility and Soil Health Management Research for Arabica Coffee Production in Ethiopia. *Plant* 9:70–80.
+
+13. de Carvalho Alves M, Sanches L, Pozza EA, et al (2022) The role of machine learning on Arabica coffee crop yield based on remote sensing and mineral nutrition monitoring. *Biosyst Eng* 221:81–104.
+
+14. Bazame HC, Molin JP, Althoff D, Martello M (2021) Detection, classification, and mapping of coffee fruits during harvest with computer vision. *Comput Electron Agric* 183:106066.
+
+15. Kouadio L, Deo RC, Byrareddy V, et al (2018) Artificial intelligence approach for the prediction of Robusta coffee yield using soil fertility properties. *Comput Electron Agric* 155:324–338.
+
+16. Rodríguez JP, Corrales DC, Aubertot JN, Corrales JC (2020) A computer vision system for automatic cherry beans detection on coffee trees. *Pattern Recognit Lett* 136:142–153.
+
+17. Muhie SH (2022) Strategies to improve the quantity and quality of export coffee in Ethiopia, a look at multiple opportunities. *J Agric Food Res* 10:100372.
+
+18. van Klompenburg T, Kassahun A, Catal C (2020) Crop yield prediction using machine learning: A systematic literature review. *Comput Electron Agric* 177:105709.
+
+19. Bergmeir C, Hyndman RJ, Koo B (2018) A note on the validity of cross-validation for evaluating autoregressive time series prediction. *Comput Stat Data Anal* 120:70–83.
+
+20. Chen Y, Yang Y (2021) The One Standard Error Rule for Model Selection: Does It Work? *Stats* 4:868–892.
+
+---
+
+## Document Information
+
+| Property | Value |
+|----------|-------|
+| **Document title** | Extended Methodology |
+| **Project** | Machine Learning-Based Forecasting of Annual Coffee Production in Western Hararghe Zone, Ethiopia |
+| **Authors** | Ketema Deresa, Hashim Siraj, Gadissa Nemomsa |
+| **Institution** | Oda Bultum University, Chiro, Oromia, Ethiopia |
+| **Version** | 2.0 |
+| **Date** | October 2026 |
+| **Contact** | ketema.deresa@obu.edu.et |
+
+---
+
+**End of Extended Methodology Document**
