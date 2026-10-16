@@ -1,0 +1,3 @@
+Set,Years_EC,N_observations,Proportion
+Training,2000–2012,389,0.778
+Test (chronological hold-out),2013–2015,111,0.222

@@ -1,0 +1,14 @@
+Variable,N_outliers_IQR,Lower_bound,Upper_bound,Min,Max
+Cultivated_Area_ha,0,-1515.77,23299.163,4202.352,20603.301
+pH,0,4.215,7.455,5.0,6.69
+Total_N_percent,0,-0.009,0.263,0.06,0.2
+Available_P_ppm,0,3.619,18.729,7.0,14.99
+Exchangeable_K_ppm,0,-268.638,841.262,91.4,597.0
+Organic_C_percent,0,-0.111,2.499,0.51,1.89
+Annual_Temperature_C,0,29.301,39.591,32.0,37.0
+Precipitation_mm_day,0,-0.586,5.584,1.11,4.0
+Relative_Humidity_percent,0,34.534,76.744,45.0,65.94
+Wind_Speed_m_s,0,-1.306,13.044,2.31,9.4
+Solar_Radiation_MJ_m2_day,0,19.655,24.835,21.0,23.5
+Soil_Wetness,0,0.255,0.855,0.4,0.7
+Production_tons,8,-806.025,5694.775,518.2,6509.0
